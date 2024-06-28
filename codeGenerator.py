@@ -27,8 +27,6 @@ def format_number(i, n):
 	r = str(i)
 	return '0' * (n - len(r)) + r
 def gen_codes(texts, filenamePrefix, under_text=None):
-
-
 	n = len(str(len(texts)))
 	for i in range(len(texts)):
 		gen_code_file(texts[i], f'{filenamePrefix}{texts[i]}.svg', under_text)
@@ -57,7 +55,6 @@ def printBuild(dir, output):
 
 def get_all_folders(directory):
 	return [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
-
 
 if __name__ == "__main__":
 	from pathlib import Path
