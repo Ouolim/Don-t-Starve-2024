@@ -1,10 +1,14 @@
 import sqlite3
 import time
-con = sqlite3.connect("data/database.db")
+con = sqlite3.connect("data/database.db", )
 cur = con.cursor()
 
 def insertCode(code, id, amount):
 	cur.execute("INSERT INTO codes VALUES(?, ?, ?)", (code, id, amount))
+	con.commit()
+
+def insertRecepie(code:str, targetId:int, targetAmount:int, recepie:str, restriction=None):
+	cur.execute("INSERT INTO recepies VALUES(?, ?, ?, ?, ?)", (code, targetId, targetAmount, recepie, restriction))
 	con.commit()
 
 def codeExist(code, database = 0):
@@ -18,7 +22,6 @@ def codeExist(code, database = 0):
 def useCode(code):
 	cur.execute("SELECT * FROM codes WHERE code = ?", (code,))
 	row = cur.fetchone()
-	print(row)
 	if row is None:
 		return False
 	cur.execute("DELETE FROM codes WHERE code = ?", (code,))
@@ -26,12 +29,19 @@ def useCode(code):
 	con.commit()
 	return True
 
-
+def readRecepie(code):
+	cur.execute("SELECT * FROM recepies WHERE code = ?", (code,))
+	row = cur.fetchone()
+	return row if row != None else None
 def fetchInventory():
 	cur.execute("SELECT * FROM inventory")
 	row = cur.fetchall()
 
-	return row
+	inventory = {}
+	for id, amount in row:
+		inventory[id] = amount
+
+	return inventory
 def insertInventory(id, delta):
 	cur.execute("SELECT * FROM inventory where id = ?", (id,))
 	row = cur.fetchone()
@@ -44,7 +54,14 @@ def insertInventory(id, delta):
 	con.commit()
 	return True
 
+def fetchRecepies():
+	cur.execute("SELECT * FROM recepies")
+	row = cur.fetchall()
+	return row
 
+def removeRecepie(code):
+	cur.execute("DELETE FROM recepies WHERE code = ?", (code,))
+	con.commit()
 
 if __name__ == "__main__":
 	useCode('c01axajckntn')
