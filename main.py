@@ -30,13 +30,13 @@ class IconTextWidget(QFrame):
 
 		icon_label = QLabel()
 		pixmap = QPixmap(icon_path)
-		pixmap = pixmap.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+		pixmap = pixmap.scaled(80, 80, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 		icon_label.setPixmap(pixmap)
 		icon_label.setAlignment(Qt.AlignCenter)
 
 		text_label = QLabel(text)
 		text_label.setAlignment(Qt.AlignCenter)
-		text_label.setStyleSheet("font-size: 18pt;")
+		text_label.setStyleSheet("font-size: 22pt;")
 		layout.addWidget(icon_label)
 		layout.addWidget(text_label)
 
@@ -44,7 +44,7 @@ class IconTextWidget(QFrame):
 		layout.setSpacing(2)
 		layout.setContentsMargins(5, 5, 5, 5)
 
-		self.setFixedSize(80, 120)
+		self.setFixedSize(100, 150)
 		self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
 		self.setLayout(layout)
@@ -93,6 +93,8 @@ class WrapWidget(QWidget):
 		self.widgets.append(item)
 
 	def clear(self):
+		while ((child := self.grid_layout.layout().takeAt(0)) != None):
+			child.widget().deleteLater()
 		self.widgets.clear()
 
 
@@ -114,7 +116,7 @@ class MainWindow(QMainWindow):
 		self.alert_widget = AlertWidget()
 		main_widget.setLayout(main_layout)
 		main_widget.setStyleSheet("background-color: white;")
-		horizontal_spacer = QSpacerItem(40, 100, QSizePolicy.Expanding, QSizePolicy.Minimum)
+		horizontal_spacer = QSpacerItem(40, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
 		# Input field
 		self.input_field = QLineEdit()
 		self.input_field.returnPressed.connect(self.on_enter_pressed)
@@ -161,7 +163,6 @@ class MainWindow(QMainWindow):
 
 		# Bottom section for icons with text
 		self.wrap_widget = WrapWidget()
-		self.update_wrap_widget()
 
 		bottom_layout = QHBoxLayout()
 		self.wrap_widget.setLayout(bottom_layout)
@@ -170,6 +171,7 @@ class MainWindow(QMainWindow):
 		self.inventory_widget = AlertWidget()
 		main_layout.addWidget(self.inventory_widget)
 		self.updateInventorySpace()
+		self.update_wrap_widget()
 
 		self.setCentralWidget(main_widget)
 
@@ -182,7 +184,6 @@ class MainWindow(QMainWindow):
 			self.activeCrafter = data.gameConstants.childrenCraftingCodes[text]
 			self.crafter_widget.set_alert_text(f"Uživatel: {self.activeCrafter}")
 			return
-
 		# code for confirmation
 		if text == data.gameConstants.yesCode:
 			if self.activeCrafter is None:
