@@ -45,9 +45,12 @@ class RecipeApp(QWidget):
 			self.id_selector.addItem(f"{id}: {name}", id)
 
 		self.amount_input = QLineEdit()
+		self.restriction_input = QLineEdit()
 
 		form_layout.addRow('Recipe ID:', self.id_selector)
 		form_layout.addRow('Amount:', self.amount_input)
+		form_layout.addRow('Restriction:', self.restriction_input)
+
 
 		self.ingredients_layout = QVBoxLayout()
 
@@ -105,6 +108,8 @@ class RecipeApp(QWidget):
 	def submit_recipe(self):
 		recipe_id = self.id_selector.currentData()
 		amount = self.amount_input.text()
+		restriction = self.restriction_input.text()
+
 
 		ingredients = {}
 		for i in range(self.ingredients_layout.count()):
@@ -117,7 +122,7 @@ class RecipeApp(QWidget):
 		# Generate a unique code for the recipe
 		recipe_code = self.generate_recipe_code(recipe_id, amount, ingredients)
 
-		databaseCommands.insertRecepie(recipe_code, recipe_id, amount, json.dumps(ingredients))
+		databaseCommands.insertRecepie(recipe_code, recipe_id, amount, json.dumps(ingredients), restriction)
 
 		# Add recipe to the display of existing recipes
 		self.add_existing_recipe(recipe_code, recipe_id, amount, ingredients)
@@ -140,7 +145,6 @@ class RecipeApp(QWidget):
 		return None
 
 	def add_existing_recipe(self, recipe_code, recipe_id, amount, ingredients):
-
 		self.existing_recipes.append((recipe_code, recipe_id, amount, ingredients))
 
 	def refresh_existing_recipes(self):
