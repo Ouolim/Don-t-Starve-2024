@@ -9,7 +9,7 @@ import json
 
 
 def computeSpace():
-	space = 50
+	space = 30 # default
 	items_in_inventory = 0
 	inventory = databaseCommands.fetchInventory()
 	for id in inventory:
@@ -221,9 +221,16 @@ class MainWindow(QMainWindow):
 				else:
 					self.alert_widget.set_alert_text("Tento kód byl již použit")
 				return
-			# code is ok, lets use it
+			# code is ok, check inventory space
+			space, items = computeSpace()
 			id = row[1]
 			amount = row[2]
+
+			if items + amount > space:
+				self.alert_widget.set_alert_text("Na tento předmět nemáš místo v inventáři, postav si truhlu")
+				return
+
+			#print(f"{self.currentRecepie[id]} přinesl {amount}x {data.items.gameItems[id]}")
 			assert databaseCommands.insertInventory(id, amount)
 			assert databaseCommands.useCode(text)
 			self.alert_widget.set_alert_text(f"OK, do inventáře přibylo {amount}x {data.items.gameItems[id]}", "green")
@@ -248,6 +255,7 @@ class MainWindow(QMainWindow):
 
 	def update_wrap_widget(self):
 		self.wrap_widget.clear()
+		self.updateInventorySpace()
 		inventory = databaseCommands.fetchInventory()
 		for id in inventory:
 			if inventory[id] == 0:
