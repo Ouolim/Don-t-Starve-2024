@@ -18,7 +18,7 @@ def computeSpace():
 			space += 20 * inventory[id]
 			items_in_inventory -= 1
 		items_in_inventory += inventory[id]
-	return (space, items_in_inventory)
+	return space, items_in_inventory
 
 class IconTextWidget(QFrame):
 	def __init__(self, icon_path, text, *args, **kwargs):
@@ -192,32 +192,27 @@ class MainWindow(QMainWindow):
 
 			if not self.crafting:
 				self.alert_widget.set_alert_text(f"Nyní nevytváříš předměty, není co potvrdit")
-				return
 
 			# check for sufficient items
 			inventory = databaseCommands.fetchInventory()
-			inventory.setdefault(0)
-			print(inventory, self.currentRecepie)
 			for id in self.currentRecepie:
 				if id not in inventory or self.currentRecepie[id] > inventory[id]:
 					self.alert_widget.set_alert_text(f"Nedostatek předmětu {data.items.gameItems[id]}")
 					return
-			print("OK")
 			for id in self.currentRecepie:
 				databaseCommands.insertInventory(int(id), -int(self.currentRecepie[id]))
 			databaseCommands.insertInventory(self.targetId, self.targetAmount)
 			self.alert_widget.set_alert_text(f"Vyroben {self.targetAmount}x {data.items.gameItems[self.targetId]}", "green")
-
 			self.update_wrap_widget()
-
+			#print(f"{self.currentRecepie[id]} vyrobil {data.items.gameItems[self.targetId]}")
 			return
 
 		if text[1] != 'r':
 			self.clearCrafting()
 		# code for item
 		if text[0] == 'c':
+			# TODO: check omezení
 			row = databaseCommands.codeExist(text)
-			print(row)
 			if row == None:
 				# use used Codes database to determine the error
 				row = databaseCommands.codeExist(text, 1)
@@ -231,14 +226,12 @@ class MainWindow(QMainWindow):
 			amount = row[2]
 			assert databaseCommands.insertInventory(id, amount)
 			assert databaseCommands.useCode(text)
-			print("xd")
 			self.alert_widget.set_alert_text(f"OK, do inventáře přibylo {amount}x {data.items.gameItems[id]}", "green")
 
 		# code for recepie
 		if text[0] == 'r':
 			self.crafting = True
 			row = databaseCommands.readRecepie(text)
-			print(row)
 			if row == None:
 				self.alert_widget.set_alert_text("Tento recept neexistuje")
 				return
@@ -251,7 +244,6 @@ class MainWindow(QMainWindow):
 			self.setCraftingItem(f"icons/{self.targetId}.png", str(self.targetAmount),
 								[f"icons/{i}.png" for i in self.currentRecepie.keys()],
 								[str(self.currentRecepie[i]) for i in self.currentRecepie.keys()])
-
 		self.update_wrap_widget()
 
 	def update_wrap_widget(self):
@@ -282,7 +274,6 @@ class MainWindow(QMainWindow):
 			else:
 				while ((child := item.layout().takeAt(0)) != None):
 					child.widget().deleteLater()
-				print(item.layout().count())
 				del item
 
 		for i, icon in enumerate(ingredientIconsPaths):
