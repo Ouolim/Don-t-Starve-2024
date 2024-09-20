@@ -4,6 +4,7 @@ import os
 import data.items
 import random
 from databaseCommands import insertCode
+
 def gen_code_file(text: str, filename: str, under_text: str = None):
 	"""
 	Generates SVG file with 128 barcode
@@ -23,20 +24,43 @@ def gen_code_file(text: str, filename: str, under_text: str = None):
 		writer.set_options(options)
 		Code128(text, writer=writer).write(f)
 
-def format_number(i, n):
+
+def format_number(i: int, n: int):
+	"""
+	Format number i to n digits
+
+	Keyword arguments:
+	i: formated number
+	n: number of digits of return string
+	"""
 	r = str(i)
 	return '0' * (n - len(r)) + r
-def gen_codes(texts, filenamePrefix, under_text=None):
-	n = len(str(len(texts)))
+
+def gen_codes(texts: list[str], filenamePrefix: str, under_text=None):
+	"""
+	Generate multiple codes with same under_text in same folder
+
+	Keyword arguments:
+	texts: List of strings, codes
+	filenamePrefix: path to folder for code files
+	under_text: optional, text under code
+	"""
 	for i in range(len(texts)):
 		gen_code_file(texts[i], f'{filenamePrefix}{texts[i]}.svg', under_text)
 
 
 def printBuild(dir, output):
+	"""
+	Renders codes from folder to printable format and opens it in browser
+
+	Keyword arguments:
+	dir - directory with codes
+	output - path to output HTML file
+	"""
+
 	import os
 	import webbrowser
 
-	# na stranku se vejde 10x4 kodu
 	with open(output, 'w') as f:
 		# I HATE HTML
 		f.write("<style>")
@@ -47,7 +71,6 @@ def printBuild(dir, output):
 		f.write("</style>")
 
 		for i, file in enumerate(sorted(os.listdir(dir))):
-			print(file)
 			f.write(f'<div>')
 			f.write(f'<img src = "{os.path.join(dir, file)}"/>')
 			f.write(f'</div>')
@@ -58,51 +81,41 @@ def get_all_folders(directory):
 
 if __name__ == "__main__":
 	from pathlib import Path
-
-	Path("batches").mkdir(parents=True, exist_ok=True)
-
-	from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
-	# Only needed for access to command line arguments
-
-	from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, \
-		QMessageBox, QLineEdit, QListWidget
+	from PySide6.QtWidgets import (QMainWindow, QPushButton, QApplication, QWidget,
+								   QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QMessageBox, QLineEdit, QListWidget)
 	from PySide6.QtCore import Qt
 
+	# Make sure the folder with codes exists
+	Path("batches").mkdir(parents=True, exist_ok=True)
 
 	class MainWindow(QMainWindow):
 		def __init__(self):
 			super().__init__()
 			self.setWindowTitle("Batch Code Printer")
 
-			# Main widget
 			main_widget = QWidget()
 			self.setCentralWidget(main_widget)
 
-			# Layouts
 			main_layout = QVBoxLayout()
-			control_layout = QHBoxLayout()
-			form_layout = QHBoxLayout()
-			list_layout = QVBoxLayout()
 
 			# Batch selector
+			batch_selector_layour = QHBoxLayout()
 			self.batch_selector = QComboBox()
-			control_layout.addWidget(self.batch_selector)
+			batch_selector_layour.addWidget(self.batch_selector)
 			self.batch_selector.currentIndexChanged.connect(self.on_batch_switched)
-			# Button to create a new batch
 			self.new_batch_button = QPushButton("Create New Batch")
-
 			self.new_batch_button.clicked.connect(self.create_new_batch)
-			control_layout.addWidget(self.new_batch_button)
+			batch_selector_layour.addWidget(self.new_batch_button)
+			main_layout.addLayout(batch_selector_layour)
 
-			# Add control layout to main layout
-			main_layout.addLayout(control_layout)
-
-			# Button to execute PrintBuild
+			# Button for batch printing
 			self.print_button = QPushButton("Print Build")
 			self.print_button.clicked.connect(self.print_build)
 			main_layout.addWidget(self.print_button, alignment=Qt.AlignCenter)
 
+
 			# Form for item input
+			form_layout = QHBoxLayout()
 			self.item_selector = QComboBox()
 			form_layout.addWidget(self.item_selector)
 			self.item_selector.addItems([
@@ -119,26 +132,27 @@ if __name__ == "__main__":
 			self.add_item_button = QPushButton("Add Item")
 			self.add_item_button.clicked.connect(self.add_item)
 			form_layout.addWidget(self.add_item_button)
-
-			# Add form layout to main layout
 			main_layout.addLayout(form_layout)
 
+
 			# List to display batch items
+			list_layout = QVBoxLayout()
 			self.item_list = QListWidget()
 			list_layout.addWidget(self.item_list)
-
-			# Add list layout to main layout
 			main_layout.addLayout(list_layout)
 
 			# Set the main layout
 			main_widget.setLayout(main_layout)
 
-			# Initialize with some batches
-
-			self.batches = sorted(get_all_folders("batches"))
+			# Init with batches from ./batches, all folder names should be valid integers
+			try:
+				self.batches = sorted(get_all_folders("batches"), key=int)
+			except ValueError:
+				print("Some folder's in ./batches name is not a valid integer, delete that folder")
+				exit(1)
+			# If folder empty
 			if not self.batches:
 				self.create_new_batch()
-
 			self.update_batch_selector()
 			self.batch_selector.setCurrentIndex(self.batch_selector.count() - 1)
 
@@ -177,7 +191,6 @@ if __name__ == "__main__":
 			else:
 				QMessageBox.warning(self, "Incomplete Input", "Please fill in both item name and description.")
 
-
 		def update_batch_selector(self):
 			self.batch_selector.clear()
 			self.batch_selector.addItems(self.batches)
@@ -186,7 +199,6 @@ if __name__ == "__main__":
 			new_batch_name = f"{len(self.batches) + 1}"
 			Path(f"batches/{new_batch_name}").mkdir(parents=True, exist_ok=True)
 			Path(f"batches/{new_batch_name}/codes").mkdir(parents=True, exist_ok=True)
-
 			open(f"batches/{new_batch_name}/info.txt", 'w')
 
 			self.batches.append(new_batch_name)
@@ -203,8 +215,7 @@ if __name__ == "__main__":
 				QMessageBox.warning(self, "No Batch Selected", "Please select a batch to print.")
 
 
-	if __name__ == "__main__":
-		app = QApplication([])
-		window = MainWindow()
-		window.show()
-		app.exec()
+	app = QApplication([])
+	window = MainWindow()
+	window.show()
+	app.exec()
