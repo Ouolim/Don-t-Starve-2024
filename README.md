@@ -31,6 +31,19 @@ Předměty se ze skupiny nedají mazat, při chybě se vyrobí nová skupina.
 
 # Technická dokumentace
 
+## Instalace 
+
+Programovacím jazykem je python a grafickou aplikace je PySide6. Na instalaci si stačí naklonovat repozitář, do venv
+si nainstalovat requirements.txt a pouštět jednotlivé aplikace.
+
+```commandline
+cd Dont-t-Starve-2024
+python3 -m venv venv
+. venv/bin/activate
+pip3 install -r requirements.txt
+python3 main.py
+```
+
 Aplikace si všechno ukádá v SQL3 databázi v ./data/database.db. V ní jsou uložené kódy předmětů, použité kódy, recepty 
 a aktuální hráčský inventář. S databází je vždy komunikováno skrz ./databaseCommands.py. 
 
