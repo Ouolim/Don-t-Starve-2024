@@ -1,14 +1,28 @@
 import sqlite3
 import time
+import os
+
+exists = os.path.isfile("data/database.db")
 con = sqlite3.connect("data/database.db")
 cur = con.cursor()
+
+if not exists:
+	print("IMPORTATNT! New database was created")
+	cur.execute("CREATE TABLE codes(code, id, amount)")
+	cur.execute("CREATE TABLE inventory(id, amount)")
+	cur.execute("CREATE TABLE recipies(code, targetId, targetAmount, recepie, restriction)")
+	cur.execute("CREATE TABLE usedCodes(code, id, amount, date)")
+	con.commit()
+
+
+
 
 def insertCode(code, id, amount):
 	cur.execute("INSERT INTO codes VALUES(?, ?, ?)", (code, id, amount))
 	con.commit()
 
 def insertRecepie(code:str, targetId:int, targetAmount:int, recepie:str, restriction=None):
-	cur.execute("INSERT INTO recepies VALUES(?, ?, ?, ?, ?)", (code, targetId, targetAmount, recepie, restriction))
+	cur.execute("INSERT INTO recipies VALUES(?, ?, ?, ?, ?)", (code, targetId, targetAmount, recepie, restriction))
 	con.commit()
 
 def codeExist(code, database = 0):
@@ -30,7 +44,7 @@ def useCode(code):
 	return True
 
 def readRecepie(code):
-	cur.execute("SELECT * FROM recepies WHERE code = ?", (code,))
+	cur.execute("SELECT * FROM recipies WHERE code = ?", (code,))
 	row = cur.fetchone()
 	return row if row != None else None
 def fetchInventory():
@@ -55,12 +69,12 @@ def insertInventory(id, delta):
 	return True
 
 def fetchRecepies():
-	cur.execute("SELECT * FROM recepies")
+	cur.execute("SELECT * FROM recipies")
 	row = cur.fetchall()
 	return row
 
 def removeRecepie(code):
-	cur.execute("DELETE FROM recepies WHERE code = ?", (code,))
+	cur.execute("DELETE FROM recipies WHERE code = ?", (code,))
 	con.commit()
 
 if __name__ == "__main__":

@@ -44,11 +44,10 @@ class RecipeApp(QWidget):
 
 		self.amount_input = QLineEdit()
 		self.restriction_input = QLineEdit()
-
+		self.restriction_input.setPlaceholderText("Write id of a role that the recipie will be restricted to, leave empty for no restriction")
 		form_layout.addRow('Recipe ID:', self.id_selector)
 		form_layout.addRow('Amount:', self.amount_input)
 		form_layout.addRow('Restriction:', self.restriction_input)
-
 
 		self.ingredients_layout = QVBoxLayout()
 
@@ -124,7 +123,7 @@ class RecipeApp(QWidget):
 
 		# Add recipe to the display of existing recipes
 		self.add_existing_recipe(recipe_code, recipe_id, amount, ingredients)
-		codeGenerator.gen_code_file(recipe_code, f"recepies/{recipe_code}.svg", f"{amount}x {gameItems[recipe_id]}")
+		codeGenerator.gen_code_file(recipe_code, f"recipies/{recipe_code}.svg", f"{amount}x {gameItems[recipe_id]}")
 
 		# Sort the existing recipes by ID and refresh the display
 		self.existing_recipes.sort(key=lambda x: x[1])  # Sort by recipe ID
@@ -174,13 +173,13 @@ class RecipeApp(QWidget):
 
 	def remove_recipe(self, code):
 		databaseCommands.removeRecepie(code)
-		os.remove(f"recepies/{code}.svg")
+		os.remove(f"recipies/{code}.svg")
 		self.existing_recipes = [r for r in self.existing_recipes if r[0] != code]
 		self.refresh_existing_recipes()
 
 
 	def print_recipes(self):
-		codeGenerator.printBuild('recepies', 'output.html')
+		codeGenerator.printBuild('recipies', 'output.html')
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
