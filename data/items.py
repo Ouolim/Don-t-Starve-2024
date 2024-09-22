@@ -1,5 +1,4 @@
 gameItems = {
-	# common
 	1: 'dřevo',
 	2: 'kámen',
 	3: 'sláma',  # tráva
@@ -8,17 +7,15 @@ gameItems = {
 	6: 'pazourek',  # ostré kamínky
 	7: 'prasečí kůže',
 
-	# Uncommon
 	8: 'zlato',
 	9: 'rákos',  # v bažině
 	10: 'kolečka',
 	11: 'popel',
-	# 12: 'prasečí tesák',  # budou získávat hlavně z boje
+	# 12: 'prasečí tesák',
 	13: 'pavoučí srdce',
 
-	# Rare
 	14: 'vzácná ruda',  # na gemy
-	#15: 'hračka z hrobu',
+	15: 'hračka z hrobu',
 	#16: 'svítící perla z moře',
 	17: 'prkna',
 	18: 'truhla',
@@ -39,4 +36,31 @@ gameItems = {
 	33: 'brýle',
 	34: 'hrnec',
 	35: 'katapult',
-	36: 'krumpáč'}
+	36: 'krumpáč',
+	37: 'bobule',
+	38: 'houby',
+	39: 'divoké maso',
+	40: 'maso',
+	41: 'med',
+	42: 'led',
+	43: 'ryby',
+	44: 'kaštany',
+	45: 'krocaní maso',
+	46: 'motýl',
+	47: 'meloun',
+	48: 'brambory',
+	49: 'cibule',
+	50: 'rajčata',
+	51: 'kukuřice',
+	52: 'dračí ovoce',
+	53: 'semínko',
+	54: 'brnění ze slámy',
+	55: 'brnění ze dřeva',
+	56: 'květináč',
+	57: 'oživovací váček',
+	58: 'sůl',
+	59: 'plast',
+	60: 'loď',
+	61: 'louč',
+	62: 'zkažené cosi',
+	63: 'svatá šipka'}
