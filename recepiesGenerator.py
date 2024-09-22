@@ -4,7 +4,6 @@ import sys
 from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
 							   QPushButton, QLineEdit, QComboBox, QScrollArea, QFormLayout,
 							   QFrame)
-from PySide6.QtCore import Qt
 
 import random
 import codeGenerator
@@ -22,7 +21,6 @@ class RecipeApp(QWidget):
 				ingredients[int(id)] = int(ingredients_bad[id])
 			self.existing_recipes.append((*row[0:3], ingredients))
 
-		print(self.existing_recipes)
 		self.initUI()
 		self.refresh_existing_recipes()
 
@@ -133,10 +131,9 @@ class RecipeApp(QWidget):
 		self.refresh_existing_recipes()
 
 	def generate_recipe_code(self, recipe_id, amount, ingredients):
-		# Implement a way to generate a unique code for the recipe
-		# This is a simple implementation; you can use a more complex one if needed
 		code = 'r'+codeGenerator.format_number(recipe_id, 2)+''.join([chr(random.randrange(ord('a'),ord('z'))) for _ in range(9)])
 		return code
+
 	def get_recipe_by_code(self, code):
 		# Implement this function to retrieve a recipe by its code
 		for recipe in self.existing_recipes:
@@ -148,7 +145,6 @@ class RecipeApp(QWidget):
 		self.existing_recipes.append((recipe_code, recipe_id, amount, ingredients))
 
 	def refresh_existing_recipes(self):
-		# Clear existing recipes display
 		for i in reversed(range(self.existing_recipes_layout.count())):
 			widget = self.existing_recipes_layout.itemAt(i).widget()
 			if widget is not None:
@@ -177,17 +173,14 @@ class RecipeApp(QWidget):
 			self.existing_recipes_layout.addWidget(recipe_frame)
 
 	def remove_recipe(self, code):
-		# Placeholder for remove functionality
-		print(code)
 		databaseCommands.removeRecepie(code)
 		os.remove(f"recepies/{code}.svg")
 		self.existing_recipes = [r for r in self.existing_recipes if r[0] != code]
 		self.refresh_existing_recipes()
 
-	def print_recipes(self):
-		# Placeholder for print functionality
-		codeGenerator.printBuild('recepies', 'output.html')
 
+	def print_recipes(self):
+		codeGenerator.printBuild('recepies', 'output.html')
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
