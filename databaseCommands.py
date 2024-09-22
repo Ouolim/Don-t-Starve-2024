@@ -1,6 +1,6 @@
 import sqlite3
 import time
-con = sqlite3.connect("data/database.db", )
+con = sqlite3.connect("data/database.db")
 cur = con.cursor()
 
 def insertCode(code, id, amount):
@@ -64,8 +64,5 @@ def removeRecepie(code):
 	con.commit()
 
 if __name__ == "__main__":
-	useCode('c01axajckntn')
-
-
-
+	pass
 
